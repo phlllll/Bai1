@@ -2,6 +2,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentManager implements MyStudentComparator {
     private List<Student> studentList;
@@ -99,10 +100,8 @@ public class StudentManager implements MyStudentComparator {
      * @return
      */
     public List<Student> sortByGradeIncreasing() {
-        studentList.sort(Comparator
-                .comparingDouble(Student::getAverageGrade)
-                .thenComparingDouble(Student::getMathsGrade));
 
+        Collections.sort(studentList, this::compare);
         return studentList;
     }
 
@@ -114,10 +113,7 @@ public class StudentManager implements MyStudentComparator {
      * @return
      */
     public List<Student> sortByGradeDecreasing() {
-        studentList.sort(Comparator
-                .comparingDouble(Student::getAverageGrade)
-                .thenComparingDouble(Student::getMathsGrade)
-                .reversed());
+        Collections.sort(studentList, Collections.reverseOrder(this::compare));
 
         return studentList;
     }
@@ -129,7 +125,14 @@ public class StudentManager implements MyStudentComparator {
      * @return
      */
     public List<Student> filterStudentsHighestGrade(int howMany) {
-       return studentList;
+        Collections.sort(studentList, Collections.reverseOrder(this::compare));
+
+        // Limit the list to contain at most howMany students
+        List<Student> filteredList = studentList.stream()
+                .limit(howMany)
+                .collect(Collectors.toList());
+
+        return filteredList;
     }
 
     /**
@@ -139,7 +142,14 @@ public class StudentManager implements MyStudentComparator {
      * @return
      */
     public List<Student> filterStudentsLowestGrade(int howMany) {
-        return studentList;
+        Collections.sort(studentList, this::compare);
+
+        // Limit the list to contain at most howMany students
+        List<Student> filteredList = studentList.stream()
+                .limit(howMany)
+                .collect(Collectors.toList());
+
+        return filteredList;
     }
 
     public static String idOfStudentsToString(List<Student> studentList) {
@@ -159,12 +169,14 @@ public class StudentManager implements MyStudentComparator {
         }
         System.out.print(studentsString.toString().trim() + "\n]");
     }
+
+    @Override
+    public int compare(T o1, T o2) {
+        return 0;
+    }
+
     @Override
     public int compare(Student left, Student right) {
-        int compareResult = String.valueOf(left.getAverageGrade()).compareTo(String.valueOf(right.getAverageGrade()));
-        if (compareResult == 0) {
-            compareResult = String.valueOf(left.getMathsGrade()).compareTo(String.valueOf(right.getMathsGrade()));
-        }
-        return compareResult;
+        return 0;
     }
 }
